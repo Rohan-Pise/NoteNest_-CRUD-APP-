@@ -13,10 +13,25 @@ const port = process.env.PORT || 3001;
 //configure express app 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({
-  origin: "https://note-nest-beige.vercel.app/",
-  credentials: true
-}));
+const allowedOrigins = [
+  "http://localhost:5173",       // when running locally
+  "http://note-nest-frontend",   // when frontend runs inside Docker
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true, // Important if you're using cookies/JWT with credentials
+};
+
+app.use(cors(corsOptions));
 
 //connecting to database;
 connectToDB();

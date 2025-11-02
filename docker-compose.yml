@@ -1,0 +1,24 @@
+
+
+services:
+  backend:
+    build: ./Backend
+    container_name: note-nest-backend
+    ports:
+      - "3001:3001"
+    env_file:
+      - ./Backend/.env
+    networks:
+      - note-nest-network
+  frontend:
+    build: ./Frontend/note-making-app
+    container_name: note-nest-frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    networks:
+      - note-nest-network
+networks:
+  note-nest-network:
+    driver: bridge
